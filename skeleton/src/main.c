@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     start = clock();
     l = load_file(file_name);
     end = clock();
-    print_list(l);
+    // print_list(l);
     free_list(l);
 
     ltime = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     start = clock();
     ll = lload_file(file_name);
     end = clock();
-    print_llist(ll);
+    // print_llist(ll);
     free_llist(ll);
 
     lltime = ((double) (end - start)) / CLOCKS_PER_SEC;

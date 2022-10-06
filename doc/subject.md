@@ -16,52 +16,55 @@ Un squelette du projet vous est proposé et contient :
 
 ### Première partie : Structure de données
 
-Les structure de données `list` et `cell`  vous sont données et permettent de définir une liste chaînées de personnes à partir de leurs informations : nom, prénom et code postal (ou `fname`, `lname` et `zip`).
+Les structure de données `list` et `cell`  vous sont données et permettent de définir une liste chaînées de personnes à partir de leurs informations : nom, prénom et code postal (ou `fname`, `lname` et `zip`). Un exemple d'utilisation de ces structures de données vous est illustré sur la figure ci-dessous.
 
-(1) Écrire une fonction `make_cell` qui crée une cellule à partir des informations de ses champs.
+![list](list.png)
 
-(2) Écrire une fonction `print_cell` capable d'afficher le contenu d'une cellule sous la forme `[prénom, nom, code postal]`.
+1. Écrire une fonction `make_cell` qui crée une cellule à partir des informations de ses champs.
 
-(3) Écrire une fonction `print_list` capable d'afficher le contenu d'une liste sous la forme `{[prénom 1, nom 1, code postal 1], [prénom 2, ...] ...}`.
+2. Écrire une fonction `push` qui ajoute une cellule dont on donne le pointeur en tête de liste.
 
-(4) A partir de celles-ci, écrire une fonction `push` dont la signature vous est donnée qui ajoute une cellule en tête de liste.
+3. Écrire une fonction `print_cell` capable d'afficher le contenu d'une cellule sous la forme `[prénom, nom, code postal]`.
 
-(5) Écrire une fonction `pop` dont la signature vous est donnée qui enlève la cellule en tête de liste et renvoie le pointeur vers sa valeur.
+4. Écrire une fonction `print_list` capable d'afficher le contenu d'une liste sous la forme 
+   ````c
+   {
+    [prénom 1, nom 1, code postal 1],
+    [prénom 2, ...], 
+   ...
+   }
+   ````
+
+5. Écrire une fonction `pop` dont la signature vous est donnée qui enlève la cellule en tête de liste et renvoie le pointeur vers sa valeur. La tester à l'aide des fonctions d'affichage dédiées.
 
 ### Deuxième partie : Lecture de données
 
-Il faut maintenant lire les données depuis un fichier et les ajouter dynamiquement dans votre structure. Les fichiers présents dans le répertoire `data` peuvent vous servir de tests pour vos fonctions.
+Il faut maintenant lire les données depuis un fichier et les ajouter dynamiquement dans votre structure. Les fichiers présents dans le répertoire `data` peuvent vous servir de tests pour vos fonctions. Trois fichiers de taille différente vous sont proposés contenant respectivement 100, 30000 et 100000 entrées.
 
-(1) Écrire une fonction `make_cell_from_line` qui crée une cellule à partir d'une ligne de données.
+1. Écrire une fonction `make_cell_from_line` qui crée une cellule à partir d'une ligne de données.
 
-(2) Écrire une fonction `load_file` qui ajoute toutes les données d'un fichier dans votre liste.
+2. Écrire une fonction `load_file` qui ajoute toutes les données d'un fichier dans votre liste.
 
-(3) Écrire une fonction `compare_cells` qui compare deux cellules selon leur nom de famille (puis prénom si égaux) par ordre alphabétique.
+3. Écrire une fonction `compare_cells` qui compare deux cellules selon leur nom de famille (puis prénom si égaux) par ordre alphabétique.
 
-(4) Écrire une fonction `insert` qui ajoute une nouvelle donnée au bon endroit (selon l'ordre défini ci-dessus) dans la structure de données. Modifier votre fonction `load_file` pour utiliser cette nouvelle fonctionnalité.
+4. Écrire une fonction `insert` qui ajoute une nouvelle donnée au bon endroit (selon l'ordre défini ci-dessus) dans la structure de données. Modifier votre fonction `load_file` pour utiliser cette nouvelle fonctionnalité.
+5. Afficher la liste chargée et vérifier qu'elle est correctement triée.
+
+> ***Note:** les fonctions de la librairie `string.h` vous seront utiles.*
 
 ### Troisième partie : Structure de données optimisée
 
-Nous allons maintenant utiliser une liste chaînée de liste chaînées, la première représentant les premières lettres des noms de famille, pour accélérer l'accès aux données et l'ajout d'une nouvelle donnée.
+Pour éviter de devoir traverser toutes les entrées en cas d'ajout d'une nouvelle, nous décidons de rajouter la première lettre de chaque nom comme caractère discriminant. Nous allons maintenant utiliser une liste chaînée de liste chaînées, la première représentant les premières lettres des noms de famille, pour accélérer l'accès aux données et l'ajout d'une nouvelle donnée. Un exemple d'utilisation est présentée sur la figure ci-dessous.
 
-(1) Définir votre structure et votre nouveau type de cellule.
+![llist](llist.png)
 
-(2) Définir les fonctions  `load_file`,  `insert` et `compare_cells` dédiées à votre nouveau type de données. 
+1. Définir votre structure et votre nouveau type de cellule.
 
-(3) En utilisant les fichiers les plus volumineux, mesurer le temps de création total des deux structures de données.
+2. Définir les fonctions  associées à votre nouveau type de données (les équivalents de `make_cell`, `compare_cells`,  `insert` et `load_file` ainsi que les fonctions de construction et destruction).
 
-(4) Réécrire les données dans un nouveau format qui stocke écrit un fichier binaire composé de :
+3. En utilisant les fichiers les plus volumineux, mesurer le temps de création total des deux structures de données. Mesurer les différences de temps sur les différents fichiers fournis (si possible !).
 
-```
-<caractere><nombres de cellules dans la structure>
-<structure>
-<structure>
-...
-<caractere><nombres de cellules dans la structure>
-<structure>
-<structure>
-...
-```
+   > ***Note:** La bibliothèque `time.h` vous sera utile.
 
 
 
