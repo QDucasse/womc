@@ -41,7 +41,6 @@ static void free_cells(struct list *lst) {
 }
 
 void free_list(struct list* lst) {
-	if (lst==NULL) { return; }
     free_cells(lst);
 	free(lst);
 }
@@ -71,7 +70,7 @@ void print_list(struct list* lst) {
 		cur=cur->next;
 	}
     print_cell(cur);
-	printf("]}\n");
+	printf("}\n");
 }
 
 

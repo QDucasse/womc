@@ -38,7 +38,7 @@ void pop(struct list* lst, struct cell* out);
 int compare_cells(struct cell* a, struct cell* b);
 
 /* Adds the cell to the list respecting alphabetical order of names/lnames */
-void append(struct list* lst, struct cell* c);
+void insert(struct list* lst, struct cell* c);
 
 /* Creates a cell from given fields */
 struct cell* make_cell_from_values(char* fname, char* lname, char* zip);
