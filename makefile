@@ -14,7 +14,6 @@ $(info SRCS    is $(SRCS))
 $(info HEADERS is $(HEADERS))
 $(info OBJECTS is $(OBJECTS))
 
-
 # This rule produces the executable by compiling and linking all objects
 # $< are the names of all prerequisites (the object files)
 # $@ is the name of the target (bin/womc in this case)

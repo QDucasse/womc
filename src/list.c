@@ -14,6 +14,12 @@ struct list* new_list() {
 	return lst;
 }
 
+char* new_string(char* str) {
+    char* new_str = malloc(sizeof(char) * strlen(str));
+    strcpy(str, new_str);
+    return new_str;
+}
+
 static void free_cells(struct list *lst) {
 	struct cell *cur;
 	struct cell *tmp;
