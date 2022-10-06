@@ -5,7 +5,20 @@
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    char* file_name;
+    switch (argc) {
+        case 1: 
+            file_name = "medium.txt"; 
+            break;
+        case 2:
+            file_name = argv[1];
+            break;
+        default: 
+            printf("Wrong number of arguments, just supply the file to process (medium.txt if none).\n");
+            return 1;
+    }
+
     clock_t start, end;
     double ltime, lltime;
     
@@ -15,7 +28,7 @@ int main() {
     // list
     struct list* l;
     start = clock();
-    l = load_file("data/out.txt");
+    l = load_file(file_name);
     end = clock();
     // print_list(l);
     free_list(l);
@@ -30,7 +43,7 @@ int main() {
     // llist
     struct llist* ll;
     start = clock();
-    ll = lload_file("data/out.txt");
+    ll = lload_file(file_name);
     end = clock();
     // print_llist(ll);
     free_llist(ll);
