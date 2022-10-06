@@ -111,7 +111,7 @@ int compare_cells(struct cell* a, struct cell* b){
         res = strcmp(a->fname, b->fname);
     }
     return res;
-};
+}
 
 void insert(struct list* lst, struct cell* c) {
     // Uninitialized list check
