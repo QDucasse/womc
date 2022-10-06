@@ -32,9 +32,9 @@ static void free_cells(struct list *lst) {
 	while (cur != NULL) {
 		tmp = cur;
 		cur = cur->next;
-        free(tmp->fname);
-        free(tmp->lname);
-        free(tmp->zip);
+        // free(tmp->fname);
+        // free(tmp->lname);
+        // free(tmp->zip);
 		free(tmp);
 	}
 	lst->head = NULL;

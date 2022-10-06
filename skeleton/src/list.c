@@ -40,20 +40,25 @@ void free_list(struct list* lst) {
 	free(lst);
 }
 
+
 /* Printing
 ======== */
 
 void print_cell(struct cell* c) {
-    /* Your code here */
-}
-
-void print_list(struct list* lst) {
 	/* Your code here */
 }
 
-/* Cell creation
+void print_list(struct list *lst) {
+	/* Your code here */
+}
+
+/* Cell addition
 ============= */
 
 struct cell* make_cell(char* fname, char* lname, char* zip) {
-    /* Your code here */
+	/* Your code here */
+}
+
+void push(struct list *lst, struct cell* c) {
+	/* Your code here */
 }
