@@ -1,5 +1,14 @@
 #include "list.h"
 
+/* Error handling
+============== */
+
+void error_msg(char* msg) {
+    printf("Error: in %s:%d - %s(): %s\n", __FILE__, __LINE__, __func__,  msg);
+    exit(EXIT_FAILURE);
+}
+
+
 /* Construction/Destruction
 ======================== */
 
@@ -7,34 +16,28 @@ struct list* new_list() {
 	struct list* lst = (struct list*)malloc(sizeof(struct list));
 
 	if (lst == NULL) { 
-		return NULL; 
+		error_msg("malloc() failed.");
 	}
 
 	lst->head=NULL;
 	return lst;
 }
 
-char* new_string(char* str) {
-    char* new_str = malloc(sizeof(char) * strlen(str));
-    strcpy(str, new_str);
-    return new_str;
-}
-
 static void free_cells(struct list *lst) {
 	struct cell *cur;
 	struct cell *tmp;
-    // Empty list 
+    // Uninitialized list 
 	if (lst == NULL) { 
-        return; 
+        error_msg("Uninitialized list pointer.");
     }
     // Free each cell one by one
 	cur = lst->head;
 	while (cur != NULL) {
 		tmp = cur;
 		cur = cur->next;
-        // free(tmp->fname);
-        // free(tmp->lname);
-        // free(tmp->zip);
+        free(tmp->fname);
+        free(tmp->lname);
+        free(tmp->zip);
 		free(tmp);
 	}
 	lst->head = NULL;
@@ -55,10 +58,13 @@ void print_cell(struct cell* c) {
 void print_list(struct list* lst) {
 	struct cell *cur;
 
-	if (lst == NULL) { return; }
+	if (lst == NULL) { 
+        error_msg("Uninitialized list pointer.");
+     }
 	
 	cur = lst->head;
 	printf("{");
+    /* Check for an empty list */
 	if(cur==NULL){
 		printf("}\n");
 		return;
@@ -79,7 +85,7 @@ void print_list(struct list* lst) {
 
 void push_with_values(struct list *lst, char* fname, char* lname, char* zip) {
 	struct cell * c;
-    c = make_cell_from_values(fname, lname, zip);
+    c = make_cell(fname, lname, zip);
     push(lst, c);
 }
 
@@ -93,15 +99,15 @@ void pop(struct list *lst, struct cell* out){
 	struct cell *c;
 
 	if (lst == NULL) { 
-		// return NULL_LIST_ERROR;  
+		error_msg("Uninitialized list pointer.");
 	}
 
 	c = lst->head;
 	if (c==NULL) {
-		// return EMPTY_LIST_ERROR;
+		error_msg("List is empty.");
 	}
 
-	out = c;
+	memcpy(out, c, sizeof(struct cell));
 	lst->head = c->next;
 	free(c);
 }
@@ -111,7 +117,9 @@ void pop(struct list *lst, struct cell* out){
 
 int compare_cells(struct cell* a, struct cell* b){
     int res;
+    /* First compare the last names */
     res = strcmp(a->lname, b->lname);
+    /* In case of equality, compare first names */
     if (res == 0) {
         res = strcmp(a->fname, b->fname);
     }
@@ -119,22 +127,22 @@ int compare_cells(struct cell* a, struct cell* b){
 }
 
 void insert(struct list* lst, struct cell* c) {
-    // Uninitialized list check
+    /* Uninitialized list check */
     if (lst == NULL) {
-        // return NULL_LIST_ERROR;
+        error_msg("Uninitialized list pointer.");
     }
-    // Empty list check OR first of the list
+    /* Empty list check OR first of the list */
     if (lst->head == NULL || compare_cells(c, lst->head) < 0) {
         c->next = lst->head;
         lst->head = c;
     } else {
         struct cell* cur;
         cur = lst->head;
-        // Look for correct place
+        /* Look for correct place */
         while (cur->next != NULL && compare_cells(c, cur->next) >= 0) {
             cur = cur->next;
         }
-        // Insert cell
+        /* Insert cell */
         c->next = cur->next;
         cur->next = c;
     }
@@ -143,14 +151,14 @@ void insert(struct list* lst, struct cell* c) {
 /* Cell creation
 ============= */
 
-struct cell* make_cell_from_values(char* fname, char* lname, char* zip) {
+struct cell* make_cell(char* fname, char* lname, char* zip) {
     struct cell * c;
     // Allocate memory for the cell
 	c = malloc(sizeof(struct cell));
 	if (c == NULL) {
-		// return ALLOCATION_ERROR;
+		error_msg("malloc() failed.");
 	}
-    // Fill fields
+    /* Fill fields */
 	c->fname = fname;
     c->lname = lname;
     c->zip = zip;
@@ -163,11 +171,14 @@ struct cell* make_cell_from_line(char* line) {
     char* fname = (char*) malloc(NAME_LENGTH * sizeof(char));
     char* lname = (char*) malloc(NAME_LENGTH * sizeof(char));
     char* zip = (char*) malloc(ZIP_LENGTH * sizeof(char));
-    // Extract values
+    if (fname == NULL || lname == NULL || zip == NULL) {
+		error_msg("malloc() failed.");
+	}
+    /* Extract values and copy the result */
     strcpy(fname, strtok(line, ","));
     strcpy(lname, strtok(NULL, ","));
     strcpy(zip, strtok(NULL, ";"));
-    return make_cell_from_values(fname, lname, zip);
+    return make_cell(fname, lname, zip);
 }
 
 /* File handling
@@ -175,14 +186,21 @@ struct cell* make_cell_from_line(char* line) {
 
 struct list* load_file(char* file_name) {
     struct cell* cur;
+    struct list* l;
     char line[256];
-    struct list* l = new_list();
+    FILE* file;
 
-    FILE* file = fopen(file_name, "r");
+    /* Open the file */
+    file = fopen(file_name, "r");
     if (file == NULL) {
-        return NULL; // error
+        error_msg("File not recognized.");
     }
 
+    /* Note: the malloc should be done here and not before the file opening
+    because if the file is not recognized, the allocated memory is lost. */
+    l = new_list();
+
+    /* Parse and insert line by line */
     while (fgets(line, sizeof(line), file)) {
         cur = make_cell_from_line(line);
         insert(l, cur);

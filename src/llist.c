@@ -14,14 +14,14 @@ struct llist* new_llist() {
 	return llst;
 }
 
-void free_lcells(struct llist* llst) {
-    struct lcell *cur;
-	struct lcell *tmp;
-    // Empty list 
+static void free_lcells(struct llist* llst) {
+    struct lcell* cur;
+	struct lcell* tmp;
+    /* Empty list */
 	if (llst == NULL) { 
         return; 
     }
-    // Free each cell one by one
+    /* Free each lcell one by one -> free the underlying lists */
 	cur = llst->head;
 	while (cur != NULL) {
 		tmp = cur;
@@ -69,24 +69,18 @@ void print_llist(struct llist* lst) {
 /* Adding/removing cells
 ===================== */
 
-struct lcell* make_lcell_from_values(char letter, struct list* lst) {
+struct lcell* make_lcell(char letter, struct list* lst) {
     struct lcell * lc;
-    // Allocate memory for the cell
+    /* Allocate memory for the cell */
 	lc = malloc(sizeof(struct lcell));
 	if (lc == NULL) {
-		// return ALLOCATION_ERROR;
+		error_msg("malloc() failed.");
 	}
-    // Fill fields
+    /* Fill fields */
 	lc->letter = letter;
     lc->lst = lst;
     lc->next = NULL;
     return lc;
-}
-
-void lpush(struct llist *llst, struct lcell* lc) {
-    // Append to the head of the list
-	lc->next = llst->head;
-	llst->head = lc;
 }
 
 int compare_lcells(struct lcell* a, struct cell* b) {
@@ -94,40 +88,40 @@ int compare_lcells(struct lcell* a, struct cell* b) {
 }
 
 void linsert(struct llist* llst, struct cell* c) {
-    // Uninitialized list check
+    /* Uninitialized list check */
     if (llst == NULL) {
-        // return NULL_LIST_ERROR;
+        error_msg("Uninitialized llist.");
     }
-    // Empty list check OR first of the list -> new cell with a new list!
+    /* Empty list check OR first of the list -> new cell with a new list! */
     if (llst->head == NULL || compare_lcells(llst->head, c) < 0) {
         struct lcell* lc;
         struct list* lst;
-        // Create the internal list with the cell
+        /* Create the internal list with the cell */
         lst = new_list();
         push(lst, c);
-        // Create the lcell with the fresh list and add it
-        lc = make_lcell_from_values(c->lname[0], lst);
+        /* Create the lcell with the fresh list and add it */
+        lc = make_lcell(c->lname[0], lst);
         lc->next = llst->head;
         llst->head = lc;
     } else {
         struct lcell* cur;
         cur = llst->head;
-        // Look for correct place
+        /* Look for correct place */
         while (cur->next != NULL && compare_lcells(cur->next, c) > 0) {
             cur = cur->next;
         }
-        // If the following lcell is NULL add the new one right after
+        /* If the following lcell is NULL add the new one right after */
         if (cur->next == NULL) {
             if (compare_lcells(cur, c) == 0) {
                 insert(cur->lst, c);
             } else {
                 struct lcell* lc;
                 struct list* lst;
-                // Create the internal list with the cell
+                /* Create the internal list with the cell */
                 lst = new_list();
                 push(lst, c);
-                // Create the lcell with the fresh list and add it
-                lc = make_lcell_from_values(c->lname[0], lst);
+                /* Create the lcell with the fresh list and add it */
+                lc = make_lcell(c->lname[0], lst);
                 cur->next = lc;
             }
         } else if (compare_lcells(cur->next, c) == 0) {
@@ -135,11 +129,11 @@ void linsert(struct llist* llst, struct cell* c) {
         } else {
             struct lcell* lc;
             struct list* lst;
-            // Create the internal list with the cell
+            /* Create the internal list with the cell */
             lst = new_list();
             push(lst, c);
-            // Create the lcell with the fresh list and add it
-            lc = make_lcell_from_values(c->lname[0], lst);
+            /* Create the lcell with the fresh list and add it */
+            lc = make_lcell(c->lname[0], lst);
             lc->next = cur->next;
             cur->next = lc;
         }
@@ -152,13 +146,20 @@ void linsert(struct llist* llst, struct cell* c) {
 struct llist* lload_file(char* file_name) {
     struct cell* cur;
     char line[256];
-    struct llist* llst = new_llist();
+    struct llist* llst;
+    FILE* file;
 
-    FILE* file = fopen(file_name, "r");
+    /* Open the file */
+    file = fopen(file_name, "r");
     if (file == NULL) {
-        return NULL; // error
+        error_msg("File not recognized");
     }
 
+    /* Note: the malloc should be done here and not before the file opening
+    because if the file is not recognized, the allocated memory is lost. */
+    llst = new_llist();
+
+    /* Parse and insert line by line */
     while (fgets(line, sizeof(line), file)) {
         cur = make_cell_from_line(line);
         linsert(llst, cur);

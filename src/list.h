@@ -16,6 +16,9 @@ struct cell {
     struct cell* next;
 };
 
+/* Prints the given message and exits */
+void error_msg(char* msg);
+
 /* Allocates memory for a list structure and returns the pointer */
 struct list* new_list();
 
@@ -26,7 +29,7 @@ void free_list(struct list* lst);
 void print_list(struct list *lst);
 
 /* Push a new cell with given value at the beginning of the list */
-void push_with_values(struct list* lst, char* name, char* lname, char* zip); 
+void push_with_values(struct list* lst, char* name, char* lname, char* zip);
 
 /* Push a cell on top */
 void push(struct list *lst, struct cell* c);
@@ -41,7 +44,7 @@ int compare_cells(struct cell* a, struct cell* b);
 void insert(struct list* lst, struct cell* c);
 
 /* Creates a cell from given fields */
-struct cell* make_cell_from_values(char* fname, char* lname, char* zip);
+struct cell* make_cell(char* fname, char* lname, char* zip);
 
 /* Creates a cell from a line of data */
 struct cell* make_cell_from_line(char* line);
