@@ -7,7 +7,7 @@ struct llist* new_llist() {
 	struct llist* llst = (struct llist*)malloc(sizeof(struct list));
 
 	if (llst == NULL) { 
-		return NULL; 
+		error_msg("Uninitialized list pointer.");
 	}
 
 	llst->head=NULL;
@@ -17,9 +17,9 @@ struct llist* new_llist() {
 static void free_lcells(struct llist* llst) {
     struct lcell* cur;
 	struct lcell* tmp;
-    /* Empty list */
+    /* Uninitialized list */
 	if (llst == NULL) { 
-        return; 
+        error_msg("Uninitialized list pointer.");
     }
     /* Free each lcell one by one -> free the underlying lists */
 	cur = llst->head;
@@ -48,7 +48,9 @@ void print_lcell(struct lcell* lc) {
 void print_llist(struct llist* lst) {
 	struct lcell *cur;
 
-	if (lst == NULL) { return; }
+	if (lst == NULL) { 
+        error_msg("Uninitialized list pointer.");
+     }
 	
 	cur = lst->head;
 	printf("{{");
@@ -83,6 +85,17 @@ struct lcell* make_lcell(char letter, struct list* lst) {
     return lc;
 }
 
+struct lcell* make_lcell_from_cell(struct cell* c) {
+    struct lcell* lc;
+    struct list* lst;
+    /* Create the internal list with the cell */
+    lst = new_list();
+    push(lst, c);
+    /* Create the lcell with the fresh list and add it */
+    lc = make_lcell(c->lname[0], lst);
+    return lc;
+}
+
 int compare_lcells(struct lcell* a, struct cell* b) {
     return b->lname[0] - a->letter;
 }
@@ -92,48 +105,31 @@ void linsert(struct llist* llst, struct cell* c) {
     if (llst == NULL) {
         error_msg("Uninitialized llist.");
     }
-    /* Empty list check OR first of the list -> new cell with a new list! */
+    /* Empty list check OR first of the list */
     if (llst->head == NULL || compare_lcells(llst->head, c) < 0) {
+        /* Create a new lcell with a new list */
         struct lcell* lc;
-        struct list* lst;
-        /* Create the internal list with the cell */
-        lst = new_list();
-        push(lst, c);
-        /* Create the lcell with the fresh list and add it */
-        lc = make_lcell(c->lname[0], lst);
+        lc = make_lcell_from_cell(c);
+        /* Add it to on the top of the llist */
         lc->next = llst->head;
         llst->head = lc;
-    } else {
+    } else { 
+        /* If we are here, the list is not empty and the name does not come before the first letter already in */
+        /* Look for correct place */
         struct lcell* cur;
         cur = llst->head;
-        /* Look for correct place */
         while (cur->next != NULL && compare_lcells(cur->next, c) > 0) {
             cur = cur->next;
         }
-        /* If the following lcell is NULL add the new one right after */
-        if (cur->next == NULL) {
-            if (compare_lcells(cur, c) == 0) {
-                insert(cur->lst, c);
-            } else {
-                struct lcell* lc;
-                struct list* lst;
-                /* Create the internal list with the cell */
-                lst = new_list();
-                push(lst, c);
-                /* Create the lcell with the fresh list and add it */
-                lc = make_lcell(c->lname[0], lst);
-                cur->next = lc;
-            }
-        } else if (compare_lcells(cur->next, c) == 0) {
+        /* Add to the current lcell if equal */
+        if (compare_lcells(cur, c) == 0) {
+            insert(cur->lst, c); // Sane
+        } else if (cur->next != NULL && compare_lcells(cur->next, c) == 0) {
             insert(cur->next->lst, c);
         } else {
+            /* Create a new lcell with a new list */
             struct lcell* lc;
-            struct list* lst;
-            /* Create the internal list with the cell */
-            lst = new_list();
-            push(lst, c);
-            /* Create the lcell with the fresh list and add it */
-            lc = make_lcell(c->lname[0], lst);
+            lc = make_lcell_from_cell(c);
             lc->next = cur->next;
             cur->next = lc;
         }

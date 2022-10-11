@@ -2,7 +2,8 @@
 CC=gcc
 
 # Add flags to the compilation
-CC_FLAGS=-Wpedantic -Wall -g
+
+CC_FLAGS= -Wpedantic -Wall -Wextra -Werror -g
 
 # These variables hold the name of all source files/headers/object files
 SRCS=$(wildcard src/*.c)
@@ -13,6 +14,8 @@ OBJECTS=$(patsubst src/%.c,bin/%.o,$(SRCS))
 $(info SRCS    is $(SRCS))
 $(info HEADERS is $(HEADERS))
 $(info OBJECTS is $(OBJECTS))
+
+default: bin/womc
 
 # This rule produces the executable by compiling and linking all objects
 # $< are the names of all prerequisites (the object files)
@@ -32,4 +35,4 @@ bin/%.o: src/%.c $(HEADERS)
 .PHONY: clean
 
 clean:
-	rm -f $(OBJECTS) womc
+	rm -f $(OBJECTS) bin/womc bin/debug
