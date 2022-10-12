@@ -25,6 +25,9 @@ struct list* new_list();
 /* Frees the input list and its cells */
 void free_list(struct list* lst);
 
+/* Print a cell */
+void print_cell(struct cell *c);
+
 /* Print a list and its cells */
 void print_list(struct list *lst);
 

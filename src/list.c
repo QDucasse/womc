@@ -52,6 +52,9 @@ void free_list(struct list* lst) {
 ======== */
 
 void print_cell(struct cell* c) {
+	if (c == NULL) { 
+        error_msg("Uninitialized cell pointer.");
+     }
     printf("[%s, %s, %s]", c->fname, c->lname, c->zip);
 }
 
@@ -90,7 +93,10 @@ void push_with_values(struct list *lst, char* fname, char* lname, char* zip) {
 }
 
 void push(struct list *lst, struct cell* c) {
-    // Append to the head of the list
+    if (lst == NULL) { 
+		error_msg("Uninitialized list pointer.");
+	}
+    /* Append to the head of the list */
 	c->next = lst->head;
 	lst->head = c;
 }
