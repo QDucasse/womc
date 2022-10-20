@@ -1,11 +1,9 @@
-#include <assert.h>
 #include <time.h>
 
 #include "llist.h"
 
-
-
 int main(int argc, char *argv[]) {
+    // General case 
     char* file_name;
     switch (argc) {
         case 1: 
@@ -52,40 +50,12 @@ int main(int argc, char *argv[]) {
     lltime = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("Construction with list took %f seconds\n", lltime);
 
-    return 0;
 
-
-    // Basic sample
-
-    // struct list* l;
-    // l = new_list();
-    // print_list(l);
-
-    // struct cell* c;
-    // c = make_cell_from_values("Annie", "ERNAUX", "76170");
-    
-    // push(l, c);
-    // print_list(l);
-
-    // struct llist* ll;
-    // ll = new_llist();
-    // print_llist(ll);
-
-    // struct lcell* lc;
-    // lc = make_lcell_from_values('A', l);
-
-    // lpush(ll, lc);
-    // print_llist(ll);
-
-    // struct cell* res;
-    // res = (struct cell*) malloc(sizeof(struct cell));
-    // pop(l, res);
-
-    // print_list(l);
-    // print_llist(ll);
-    // free(res);
-
-    // free_llist(ll);
-    // free_list(l);
+    struct cell*c = make_cell_from_line("Quentin,DUCASSE,000;");
+    print_cell(c);
+    free(c->fname);
+    free(c->lname);
+    free(c->zip);
+    free(c);
     return 0;
 }

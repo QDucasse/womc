@@ -96,6 +96,9 @@ void push(struct list *lst, struct cell* c) {
     if (lst == NULL) { 
 		error_msg("Uninitialized list pointer.");
 	}
+    if (c == NULL) { 
+		error_msg("Uninitialized cell.");
+	}
     /* Append to the head of the list */
 	c->next = lst->head;
 	lst->head = c;
@@ -123,6 +126,10 @@ void pop(struct list *lst, struct cell* out){
 
 int compare_cells(struct cell* a, struct cell* b){
     int res;
+    if (a == NULL || b == NULL) {
+        error_msg("Uninitialized cell pointers.");
+    }
+
     /* First compare the last names */
     res = strcmp(a->lname, b->lname);
     /* In case of equality, compare first names */
@@ -136,6 +143,10 @@ void insert(struct list* lst, struct cell* c) {
     /* Uninitialized list check */
     if (lst == NULL) {
         error_msg("Uninitialized list pointer.");
+    }
+    /* Uninitialized cell check */
+    if (c == NULL) {
+        error_msg("Uninitialized cell pointer.");
     }
     /* Empty list check OR first of the list */
     if (lst->head == NULL || compare_cells(c, lst->head) < 0) {
@@ -174,6 +185,10 @@ struct cell* make_cell(char* fname, char* lname, char* zip) {
 
 
 struct cell* make_cell_from_line(char* line) {
+    /* In case of a static allocation of the line */
+    char buffer[250];
+    strcpy(buffer, line);
+
     char* fname = (char*) malloc(NAME_LENGTH * sizeof(char));
     char* lname = (char*) malloc(NAME_LENGTH * sizeof(char));
     char* zip = (char*) malloc(ZIP_LENGTH * sizeof(char));
@@ -181,7 +196,7 @@ struct cell* make_cell_from_line(char* line) {
 		error_msg("malloc() failed.");
 	}
     /* Extract values and copy the result */
-    strcpy(fname, strtok(line, ","));
+    strcpy(fname, strtok(buffer, ","));
     strcpy(lname, strtok(NULL, ","));
     strcpy(zip, strtok(NULL, ";"));
     return make_cell(fname, lname, zip);
