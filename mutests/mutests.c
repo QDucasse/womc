@@ -39,6 +39,35 @@ void free_static_list(struct list* lst) {
 	free(lst);
 }
 
+static void free_static_lcell(struct lcell *lc) {
+	free_static_list(lc->lst);
+    free(lc);
+}
+
+static void free_static_lcells(struct llist* llst) {
+    struct lcell* cur;
+	struct lcell* tmp;
+    /* Uninitialized list */
+	if (llst == NULL) { 
+        error_msg("Uninitialized list pointer.");
+    }
+    /* Free each lcell one by one -> free the underlying lists */
+	cur = llst->head;
+	while (cur != NULL) {
+		tmp = cur;
+		cur = cur->next;
+		free_static_lcell(tmp);
+	}
+	llst->head = NULL;
+}
+
+void free_static_llist(struct llist* llst) {
+    free_static_lcells(llst);
+    free(llst);
+}
+
+
+
 /* =========================================================================
                               List Tests
  =========================================================================*/
@@ -375,23 +404,21 @@ static MunitResult test_load_file(const MunitParameter params[], void* user_data
     (void) params;
     (void) user_data;
     struct list* lst;
-    struct cell* c1;
-    struct cell* c2;
-    struct cell* c3;
-    struct cell* c4;
-    struct cell* c5;
+    struct cell *c1, *c2, *c3, *c4, *c5, *c6;
     c1 = make_cell("Samir","ARNAUD","70337");
     c2 = make_cell("Geneviève","BERTRAND","64084");
     c3 = make_cell("Lina","CORINE","53263");
-    c4 = make_cell("Marco","FOURNIER","74161");
-    c5 = make_cell("Jessy","ZIDANE","84067");
-    lst = load_file("mutests/test_file.txt");
+    c4 = make_cell("Michel","CORINE","54635");
+    c5 = make_cell("Marco","FOURNIER","74161");
+    c6 = make_cell("Jessy","ZIDANE","84067");
+    lst = load_file("mutests/test_file_list.txt");
     munit_assert_true(compare_cells(lst->head, c1) == 0);
     munit_assert_true(compare_cells(lst->head->next, c2) == 0);
     munit_assert_true(compare_cells(lst->head->next->next, c3) == 0);
     munit_assert_true(compare_cells(lst->head->next->next->next, c4) == 0);
     munit_assert_true(compare_cells(lst->head->next->next->next->next, c5) == 0);
-    munit_assert_null(lst->head->next->next->next->next->next);
+    munit_assert_true(compare_cells(lst->head->next->next->next->next->next, c6) == 0);
+    munit_assert_null(lst->head->next->next->next->next->next->next);
     free_list(lst);
     free(c1);
     free(c2);
@@ -555,10 +582,17 @@ static MunitResult test_make_lcell_from_values(const MunitParameter params[], vo
     return MUNIT_OK;
 }
 
-static MunitResult test_make_lcell_from_line(const MunitParameter params[], void* user_data) {
+static MunitResult test_make_lcell_from_cell(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c;
+    struct lcell* lc;
+    c = make_cell("TestFname", "TestLname", "10000");
+    lc = make_lcell_from_cell(c);
+    munit_assert_char('T', ==, lc->letter);
+    munit_assert_true(compare_cells(c, lc->lst->head) == 0);
+    free_static_lcell(lc);
+    return MUNIT_OK;
 }
 
 /* Printing
@@ -567,25 +601,59 @@ static MunitResult test_make_lcell_from_line(const MunitParameter params[], void
 static MunitResult test_smoke_print_lcell_empty(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c;
+    struct lcell* lc;
+    c = make_cell("", "", "");
+    lc = make_lcell_from_cell(c);
+    suppress_print_output();
+    print_lcell(lc);
+    free_static_lcell(lc);
+    return MUNIT_OK;
 }
 
 static MunitResult test_smoke_print_lcell_full(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c;
+    struct lcell* lc;
+    c = make_cell("TestFname", "TestLname", "10000");
+    lc = make_lcell_from_cell(c);
+    suppress_print_output();
+    print_lcell(lc);
+    free_static_lcell(lc);
+    return MUNIT_OK;
 }
 
 static MunitResult test_smoke_print_llist_empty(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    llst = new_llist();
+    suppress_print_output();
+    print_llist(llst);
+    free_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_smoke_print_llist_full(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c1;
+    struct cell* c2;
+    struct lcell* lc1;
+    struct lcell* lc2;
+    struct llist* llst;
+    llst = new_llist();
+    c1 = make_cell("TestFname1", "TestLname1", "10001");
+    c2 = make_cell("TestFname2", "TestLname2", "10002");
+    lc1 = make_lcell_from_cell(c1);
+    lc2 = make_lcell_from_cell(c2);
+    lpush(llst, lc2);
+    lpush(llst, lc1);
+    suppress_print_output();
+    print_llist(llst);
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 /* Comparison
@@ -594,19 +662,46 @@ static MunitResult test_smoke_print_llist_full(const MunitParameter params[], vo
 static MunitResult test_compare_lcells_gt(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c1;
+    struct cell* c2;
+    struct lcell* lc;
+    c1 = make_cell("Aaaa", "AAAA", "10000");
+    c2 = make_cell("Bbbb", "BBBB", "10000");
+    lc = make_lcell_from_cell(c1);
+    munit_assert_true(compare_lcells(lc, c2) >= 0);
+    free_static_lcell(lc);
+    free(c2);
+    return MUNIT_OK;
 }
 
 static MunitResult test_compare_lcells_lt(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c1;
+    struct cell* c2;
+    struct lcell* lc;
+    c1 = make_cell("Bbbb", "BBBB", "10000"); 
+    c2 = make_cell("Aaaa", "AAAA", "10000");
+    lc = make_lcell_from_cell(c1);
+    munit_assert_true(compare_lcells(lc, c2) <= 0);
+    free_static_lcell(lc);
+    free(c2);
+    return MUNIT_OK;
 }
 
 static MunitResult test_compare_lcells_eq(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell* c1;
+    struct cell* c2;
+    struct lcell* lc;
+    c1 = make_cell("Bbbb", "BBBB", "10000"); 
+    c2 = make_cell("Aaaa", "BAAA", "10000");
+    lc = make_lcell_from_cell(c1);
+    munit_assert_true(compare_lcells(lc, c2) == 0);
+    free_static_lcell(lc);
+    free(c2);
+    return MUNIT_OK;
 }
 
 /* Insertion
@@ -615,31 +710,104 @@ static MunitResult test_compare_lcells_eq(const MunitParameter params[], void* u
 static MunitResult test_linsert_empty_list(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    struct cell* c1;
+    llst = new_llist();
+    c1 = make_cell_from_line("Quentin,DUCASSE,10000");
+    linsert(llst, c1);
+    munit_assert_true(compare_lcells(llst->head, c1) == 0);
+    munit_assert_true(compare_cells(llst->head->lst->head, c1) == 0);
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_linsert_first(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell *c1, *c2, *new;
+    struct lcell *lc1, *lc2;
+    struct llist* llst;
+    llst = new_llist();
+    c1 = make_cell_from_line("Michel,BERTRAND,10000");
+    c2 = make_cell_from_line("Emilien,FOURNIER,10000");
+    new = make_cell_from_line("Antoine,ARNAUD,10000");
+    lc1 = make_lcell_from_cell(c1);
+    lc2 = make_lcell_from_cell(c2);
+    lpush(llst, lc2);
+    lpush(llst, lc1);
+    linsert(llst, new);
+    munit_assert_true(compare_lcells(llst->head, new) == 0);
+    munit_assert_true(compare_cells(llst->head->lst->head, new) == 0);
+    munit_assert_char(llst->head->letter, ==, new->lname[0]);
+    munit_assert_null(llst->head->lst->head->next);
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_linsert_middle(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell *c1, *c2, *new;
+    struct lcell *lc1, *lc2;
+    struct llist* llst;
+    llst = new_llist();
+    c1 = make_cell_from_line("Michel,BERTRAND,10000");
+    c2 = make_cell_from_line("Emilien,FOURNIER,10000");
+    new = make_cell_from_line("Quentin,DUCASSE,10000");
+    lc1 = make_lcell_from_cell(c1);
+    lc2 = make_lcell_from_cell(c2);
+    lpush(llst, lc2);
+    lpush(llst, lc1);
+    linsert(llst, new);
+    munit_assert_true(compare_lcells(llst->head->next, new) == 0);
+    munit_assert_true(compare_cells(llst->head->next->lst->head, new) == 0);
+    munit_assert_char(llst->head->next->letter, ==, new->lname[0]);
+    munit_assert_null(llst->head->next->lst->head->next);
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_linsert_last(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell *c1, *c2, *new;
+    struct lcell *lc1, *lc2;
+    struct llist* llst;
+    llst = new_llist();
+    c1 = make_cell_from_line("Michel,BERTRAND,10000");
+    c2 = make_cell_from_line("Emilien,FOURNIER,10000");
+    new = make_cell_from_line("Zinedine,ZIDANE,10000");
+    lc1 = make_lcell_from_cell(c1);
+    lc2 = make_lcell_from_cell(c2);
+    lpush(llst, lc2);
+    lpush(llst, lc1);
+    linsert(llst, new);
+    munit_assert_true(compare_lcells(llst->head->next->next, new) == 0);
+    munit_assert_true(compare_cells(llst->head->next->next->lst->head, new) == 0);
+    munit_assert_char(llst->head->next->next->letter, ==, new->lname[0]);
+    munit_assert_null(llst->head->next->next->lst->head->next);
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_linsert_exist(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    struct cell *c1, *new;
+    struct lcell* lc1;
+    llst = new_llist();
+    c1 = make_cell_from_line("Michel,BERTRAND,10000");
+    new = make_cell_from_line("Arnaud,BERTRAND,10000");
+    lc1 = make_lcell_from_cell(c1);
+    lpush(llst, lc1);
+    linsert(llst, new);
+    munit_assert_true(compare_lcells(llst->head, new) == 0);
+    munit_assert_true(compare_cells(llst->head->lst->head, new) == 0);
+    munit_assert_true(compare_cells(llst->head->lst->head->next, c1) == 0);
+    munit_assert_null(c1->next);
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 /* File loading
@@ -648,7 +816,68 @@ static MunitResult test_linsert_exist(const MunitParameter params[], void* user_
 static MunitResult test_lload_file(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    struct cell *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+    c1 = make_cell("Samir","ARNAUD","70337");
+    c2 = make_cell("Geneviève","BERTRAND","64084");
+    c3 = make_cell("André","CANARD","65734");
+    c4 = make_cell("Lina","CORINE","53263");
+    c5 = make_cell("Michel","CORINE","54635");
+    c6 = make_cell("Marco","FOURNIER","74161");
+    c7 = make_cell("Jessy","ZIDANE","84067");
+    c8 = make_cell("Zinédine","ZIDANE","78400");
+    llst = lload_file("mutests/test_file_llist.txt");
+    /* lcell A */
+    munit_assert_char(llst->head
+                        ->letter, ==, 'A');
+    munit_assert_true(compare_cells(llst->head
+                                    ->lst->head, c1) == 0);
+    munit_assert_null(llst->head
+                        ->lst->head->next);
+    /* lcell B */
+    munit_assert_char(llst->head->next
+                        ->letter, ==, 'B');
+    munit_assert_true(compare_cells(llst->head->next
+                        ->lst->head, c2) == 0);
+    munit_assert_null(llst->head->next
+                        ->lst->head->next);
+    /* lcell C */
+    munit_assert_char(llst->head->next->next
+                        ->letter, ==, 'C');
+    munit_assert_true(compare_cells(llst->head->next->next
+                        ->lst->head, c3) == 0);
+    munit_assert_true(compare_cells(llst->head->next->next
+                        ->lst->head->next, c4) == 0);
+    munit_assert_true(compare_cells(llst->head->next->next
+                        ->lst->head->next->next, c5) == 0);
+    munit_assert_null(llst->head->next->next
+                        ->lst->head->next->next->next);
+    /* lcell F */
+    munit_assert_char(llst->head->next->next->next
+                        ->letter, ==, 'F');
+    munit_assert_true(compare_cells(llst->head->next->next->next
+                        ->lst->head, c6) == 0);
+    munit_assert_null(llst->head->next->next->next
+                        ->lst->head->next);
+    /* lcell Z */
+    munit_assert_char(llst->head->next->next->next->next
+                            ->letter, ==, 'Z');
+    munit_assert_true(compare_cells(llst->head->next->next->next->next
+                            ->lst->head, c7) == 0);
+    munit_assert_true(compare_cells(llst->head->next->next->next->next
+                            ->lst->head->next, c8) == 0);
+    munit_assert_null(llst->head->next->next->next->next
+                            ->lst->head->next->next);
+    free_llist(llst);
+    free(c1);
+    free(c2);
+    free(c3);
+    free(c4);
+    free(c5);
+    free(c6);
+    free(c7);
+    free(c8);
+    return MUNIT_OK;
 }
 
 
@@ -659,55 +888,93 @@ static MunitResult test_lload_file(const MunitParameter params[], void* user_dat
 static MunitResult test_free_llist_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    llst = NULL;
+    free_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_free_static_llist_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    llst = NULL;
+    free_static_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_smoke_print_lcell_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct lcell* lc;
+    lc = NULL;
+    print_lcell(lc);
+    return MUNIT_OK;
 }
 
 static MunitResult test_smoke_print_llist_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    llst = NULL;
+    print_llist(llst);
+    return MUNIT_OK;
 }
 
 static MunitResult test_compare_lcells_c1_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct lcell* lc1;
+    struct cell* c2;
+    lc1 = NULL;
+    c2 = make_cell("Bbbb", "AAAA", "10002");
+    compare_lcells(lc1, c2);
+    free(c2);
+    return MUNIT_OK;
 }
 
 static MunitResult test_compare_lcells_c2_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct cell *c1, *c2;
+    struct lcell *lc1;
+    c1 = make_cell("Bbbb", "AAAA", "10001");
+    lc1 = make_lcell_from_cell(c1);
+    c2 = NULL;
+    compare_lcells(lc1, c2);
+    free_static_lcell(lc1);
+    return MUNIT_OK;
 }
 
 static MunitResult test_linsert_llist_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    struct cell* c;
+    llst = NULL;
+    c = make_cell("TestFname", "TestLname", "10000");
+    linsert(llst, c);
+    return MUNIT_OK;
 }
 
 static MunitResult test_linsert_cell_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    struct cell* c;
+    llst = new_llist();
+    c = NULL;
+    linsert(llst, c);
+    return MUNIT_OK;
 }
 
 static MunitResult test_lload_file_null(const MunitParameter params[], void* user_data) {
     (void) params;
     (void) user_data;
-    return MUNIT_FAIL;
+    struct llist* llst;
+    llst = lload_file("unknown_file");
+    free_llist(llst);
+    return MUNIT_OK;
 }
 
 /* =========================================================================
@@ -764,7 +1031,7 @@ static MunitTest general_llist_tests[] = {
     {(char*) "/print/llist/empty", test_smoke_print_llist_empty, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*) "/print/llist/full",  test_smoke_print_llist_full,  NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*) "/make/lcell/values", test_make_lcell_from_values,  NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/make/lcell/line",   test_make_lcell_from_line,    NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/make/lcell/cell",   test_make_lcell_from_cell,    NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*) "/compare/llgt",      test_compare_lcells_gt,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*) "/compare/lllt",      test_compare_lcells_lt,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {(char*) "/compare/lleq",      test_compare_lcells_eq,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},

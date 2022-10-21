@@ -14,6 +14,11 @@ struct llist* new_llist() {
 	return llst;
 }
 
+void free_lcell(struct lcell* lc) {
+    free_list(lc->lst);
+    free(lc);
+}
+
 static void free_lcells(struct llist* llst) {
     struct lcell* cur;
 	struct lcell* tmp;
@@ -26,8 +31,7 @@ static void free_lcells(struct llist* llst) {
 	while (cur != NULL) {
 		tmp = cur;
 		cur = cur->next;
-		free_list(tmp->lst);
-        free(tmp);
+		free_lcell(tmp);
 	}
 	llst->head = NULL;
 }
@@ -41,6 +45,9 @@ void free_llist(struct llist* llst) {
 ======== */
 
 void print_lcell(struct lcell* lc) {
+    if (lc == NULL) { 
+        error_msg("Uninitialized lcell pointer.");
+    }
     printf("[%c] ", lc->letter);
     print_list(lc->lst);
 }
@@ -71,6 +78,11 @@ void print_llist(struct llist* lst) {
 /* Adding/removing cells
 ===================== */
 
+void lpush(struct llist* llst, struct lcell* lc) {
+    lc->next = llst->head;
+    llst->head = lc;
+}
+
 struct lcell* make_lcell(char letter, struct list* lst) {
     struct lcell * lc;
     /* Allocate memory for the cell */
@@ -97,6 +109,9 @@ struct lcell* make_lcell_from_cell(struct cell* c) {
 }
 
 int compare_lcells(struct lcell* a, struct cell* b) {
+    if (a == NULL || b == NULL) {
+		error_msg("Unitialized cell or lcell pointer.");
+	}
     return b->lname[0] - a->letter;
 }
 

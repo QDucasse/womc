@@ -8,16 +8,10 @@ CC_FLAGS= -Wpedantic -Wall -Wextra -g
 SRCS=$(wildcard src/*.c)
 HDRS=$(wildcard src/*.h)
 OBJS=$(patsubst src/%.c,bin/%.o,$(SRCS))
-<<<<<<< HEAD
 
 TST_SRCS=$(wildcard tests/*.c)
 TST_HDRS=$(wildcard tests/*.h)
 TST_OBJS=$(filter-out bin/main.o, $(OBJS))
-=======
-TST_SRCS=$(wildcard tests/*.c)
-TST_HDRS=$(wildcard tests/*.h)
-TST_OBJS=$(filter-out bin/main.o, $(OBJS)) $(patsubst tests/%.c,bin/%.o,$(TST_SRCS))
->>>>>>> 628f55bffc1c989e5278053af5249069bb09c04a
 
 MU_TST_SRCS=$(wildcard mutests/*.c) mutests/munit/munit.c
 MU_TST_HDRS=$(wildcard mutests/*.h) mutests/munit/munit.h
@@ -28,17 +22,13 @@ MU_TST_OBJS=$(filter-out bin/main.o, $(OBJS))
 # $(info HDRS is $(HDRS))
 # $(info OBJS is $(OBJS))
 # $(info TST_SRCS is $(TST_SRCS))
-<<<<<<< HEAD
 # $(info TST_OBJS is $(TST_OBJS))
 # $(info MU_TST_SRCS is $(MU_TST_SRCS))
 # $(info MU_TST_HDRS is $(MU_TST_HDRS))
 # $(info MU_TST_OBJS is $(MU_TST_OBJS))
-=======
-# $(info TST_HDRS is $(TST_HDRS))
-# $(info TST_OBJS is $(TST_OBJS))
->>>>>>> 628f55bffc1c989e5278053af5249069bb09c04a
 
 default: bin/womc
+all: default tests mutests
 tests: bin/tests
 mutests: bin/mutests
 
@@ -56,7 +46,6 @@ bin/%.o: src/%.c $(HDRS)
 	$(CC) $< $(CC_FLAGS) -c -o $@ 
 # must start with TAB character
 
-<<<<<<< HEAD
 # To use munit the test suite written in tests/mutests will be executed
 bin/tests: $(TST_SRCS) $(TST_OBJS)
 	$(CC) $^ $(TST_HDRS) $() $(CC_FLAGS) -o $@ 
@@ -65,17 +54,6 @@ bin/tests: $(TST_SRCS) $(TST_OBJS)
 # To use munit the test suite written in tests/mutests will be executed
 bin/mutests: $(MU_TST_SRCS) $(MU_TST_OBJS)
 	$(CC) $^ $(MU_TST_HDRS) $() $(CC_FLAGS) -o $@ 
-=======
-# Similar rules for tests, munit is handled separately and linked against the rest
-bin/tests: $(TST_OBJS) bin/munit.o
-	$(CC) $^ -o $@
-
-bin/%.o: tests/%.src $(TST_HEADERS) tests/munit/munit.h
-	$(CC) $< $(CC_FLAGS) -c -o $@ 
-
-bin/munit.o: tests/munit/munit.c tests/munit/munit.h
-	$(CC) $< $(CC_FLAGS) -c -o $@ 
->>>>>>> 628f55bffc1c989e5278053af5249069bb09c04a
 
 .PHONY: clean
 

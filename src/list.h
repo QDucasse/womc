@@ -22,6 +22,9 @@ void error_msg(char* msg);
 /* Allocates memory for a list structure and returns the pointer */
 struct list* new_list();
 
+/* Frees the input cell */
+void free_cell(struct cell* c);
+
 /* Frees the input list and its cells */
 void free_list(struct list* lst);
 

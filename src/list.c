@@ -23,6 +23,13 @@ struct list* new_list() {
 	return lst;
 }
 
+void free_cell(struct cell* c) {
+    free(c->fname);
+    free(c->lname);
+    free(c->zip);
+    free(c);
+}
+
 static void free_cells(struct list *lst) {
 	struct cell *cur;
 	struct cell *tmp;
@@ -35,10 +42,7 @@ static void free_cells(struct list *lst) {
 	while (cur != NULL) {
 		tmp = cur;
 		cur = cur->next;
-        free(tmp->fname);
-        free(tmp->lname);
-        free(tmp->zip);
-		free(tmp);
+        free_cell(tmp);
 	}
 	lst->head = NULL;
 }
