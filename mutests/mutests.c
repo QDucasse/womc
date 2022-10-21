@@ -3,10 +3,9 @@
 
 
 
-/* ===========================================================================
- *                               Test Helpers
- * ===========================================================================
- */
+/* =========================================================================
+                              Test Helpers
+ =========================================================================*/
 
 
 static void suppress_print_output() {
@@ -39,6 +38,10 @@ void free_static_list(struct list* lst) {
     free_static_cells(lst);
 	free(lst);
 }
+
+/* =========================================================================
+                              List Tests
+ =========================================================================*/
 
 /* Cell making
 =========== */
@@ -399,6 +402,10 @@ static MunitResult test_load_file(const MunitParameter params[], void* user_data
 }
 
 
+/* =========================================================================
+                              List NULL checks
+ =========================================================================*/
+
 /* NULL checks
 =========== */
 
@@ -526,6 +533,186 @@ static MunitResult test_load_file_null(const MunitParameter params[], void* user
     return MUNIT_OK;
 }
 
+/* =========================================================================
+                              LList Tests
+ =========================================================================*/
+
+/* LCell making
+============ */
+
+static MunitResult test_make_lcell_from_values(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    struct list* lst;
+    struct cell* c;
+    struct lcell* lc;
+    lst = new_list();
+    c = make_cell("TestFname", "TestLname", "10000");
+    push(lst, c);
+    lc = make_lcell('T', lst);
+    munit_assert_char('T', ==, lc->letter);
+    munit_assert_true(compare_cells(c, lc->lst->head) == 0);
+    return MUNIT_OK;
+}
+
+static MunitResult test_make_lcell_from_line(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+/* Printing
+======== */
+
+static MunitResult test_smoke_print_lcell_empty(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_smoke_print_lcell_full(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_smoke_print_llist_empty(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_smoke_print_llist_full(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+/* Comparison
+========== */
+
+static MunitResult test_compare_lcells_gt(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_compare_lcells_lt(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_compare_lcells_eq(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+/* Insertion
+========= */
+
+static MunitResult test_linsert_empty_list(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_linsert_first(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_linsert_middle(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_linsert_last(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_linsert_exist(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+/* File loading
+============ */
+
+static MunitResult test_lload_file(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+
+/* =========================================================================
+                            LList NULL Checks
+ =========================================================================*/
+
+static MunitResult test_free_llist_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_free_static_llist_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_smoke_print_lcell_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_smoke_print_llist_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_compare_lcells_c1_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_compare_lcells_c2_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_linsert_llist_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_linsert_cell_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+static MunitResult test_lload_file_null(const MunitParameter params[], void* user_data) {
+    (void) params;
+    (void) user_data;
+    return MUNIT_FAIL;
+}
+
+/* =========================================================================
+                           Test Suites and Main
+ =========================================================================*/
 
 /* Test Suite
 ========== */
@@ -556,21 +743,52 @@ static MunitTest general_list_tests[] = {
 };
 
 static MunitTest null_list_tests[] = {
-    {(char*) "/free/list/null-list",        test_free_list_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/free/static-list/null-list", test_free_static_list_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/print/cell/null-cell",       test_smoke_print_cell_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/print/list/null-list",       test_smoke_print_list_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/compare/null-c1",            test_compare_cells_c1_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/compare/null-c2",            test_compare_cells_c2_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/insert/null-list",           test_insert_list_null,            NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/insert/null-cell",           test_insert_cell_null,            NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/push/null-list",             test_push_list_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/push/null-cell",             test_push_cell_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/pop/null-list",              test_pop_list_null,               NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
-    {(char*) "/load-file/null-file",        test_load_file_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/free/list/null-list",     test_free_list_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/free/sta-list/null-list", test_free_static_list_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/cell/null-cell",    test_smoke_print_cell_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/list/null-list",    test_smoke_print_list_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/null-c1",         test_compare_cells_c1_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/null-c2",         test_compare_cells_c2_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/insert/null-list",        test_insert_list_null,            NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/insert/null-cell",        test_insert_cell_null,            NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/push/null-list",          test_push_list_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/push/null-cell",          test_push_cell_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/pop/null-list",           test_pop_list_null,               NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/load-file/null-file",     test_load_file_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
     {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
 };
 
+static MunitTest general_llist_tests[] = {
+    {(char*) "/print/lcell/empty", test_smoke_print_lcell_empty, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/lcell/full",  test_smoke_print_lcell_full,  NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/llist/empty", test_smoke_print_llist_empty, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/llist/full",  test_smoke_print_llist_full,  NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/make/lcell/values", test_make_lcell_from_values,  NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/make/lcell/line",   test_make_lcell_from_line,    NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/llgt",      test_compare_lcells_gt,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/lllt",      test_compare_lcells_lt,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/lleq",      test_compare_lcells_eq,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/empty",     test_linsert_empty_list,      NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/first",     test_linsert_first,           NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/middle",    test_linsert_middle,          NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/last",      test_linsert_last,            NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/exist",     test_linsert_exist,           NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/lload-file",        test_lload_file,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+};
+
+static MunitTest null_llist_tests[] = {
+    {(char*) "/free/llist/null-llist",     test_free_llist_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/free/sta-llist/null-llist", test_free_static_llist_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/lcell/null-lcell",    test_smoke_print_lcell_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/print/llist/null-llist",    test_smoke_print_llist_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/null-lc1",          test_compare_lcells_c1_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/compare/null-c2",           test_compare_lcells_c2_null,       NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/null-list",         test_linsert_llist_null,           NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/linsert/null-cell",         test_linsert_cell_null,            NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*) "/load-file/null-file",       test_lload_file_null,              NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+};
 
 static const MunitSuite general_list_suite = { 
     (char*) "/list", general_list_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
@@ -580,11 +798,19 @@ static const MunitSuite null_list_suite = {
     (char*) "/list/null", null_list_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
 };
 
+static const MunitSuite general_llist_suite = { 
+    (char*) "/llist", general_llist_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
+};
+
+static const MunitSuite null_llist_suite = { 
+    (char*) "/llist/null", null_llist_tests, NULL, 1, MUNIT_SUITE_OPTION_NONE
+};
 
 #include <stdlib.h>
 int main(int argc, char* argv[MUNIT_ARRAY_PARAM(argc + 1)]) {
     munit_suite_main(&general_list_suite, (void*) "munit", argc, argv);
     munit_suite_main(&null_list_suite, (void*) "munit", argc, argv);
-
+    munit_suite_main(&general_llist_suite, (void*) "munit", argc, argv);
+    munit_suite_main(&null_llist_suite, (void*) "munit", argc, argv);
     return 0;
 }
