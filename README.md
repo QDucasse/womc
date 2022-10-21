@@ -12,7 +12,8 @@ The project is structured as follows:
 - `doc` - contains the main subject and figures for the project
 - `generator` - contains a simple python script to generate a file with a list of people formatted as `Firstname,LASTNAME,zipcode;`
 - `data` - contains example of generated files 
-- `bin` - is the target for object files and binaries.
+- `bin` - is the target for object files and binaries
+- `skeleton` - contains the basis to hand out to students
 
 ### Installation
 
