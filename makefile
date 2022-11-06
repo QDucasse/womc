@@ -52,8 +52,8 @@ bin/tests: $(TST_SRCS) $(TST_OBJS)
 
 
 # To use munit the test suite written in tests/mutests will be executed
-bin/mutests: $(MU_TST_SRCS) $(MU_TST_OBJS)
-	$(CC) $^ $(MU_TST_HDRS) $() $(CC_FLAGS) -o $@ 
+bin/mutests: $(MU_TST_SRCS) $(MU_TST_OBJS) $(MU_TST_HDRS)
+	$(CC) $(MU_TST_SRCS) $(MU_TST_OBJS) $(CC_FLAGS) -o $@ 
 
 .PHONY: clean
 
